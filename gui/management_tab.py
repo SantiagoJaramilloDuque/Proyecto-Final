@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QTableWidget,
     QTableWidgetItem, QGroupBox, QSplitter, QDialog, QFormLayout, QDialogButtonBox,
-    QMessageBox, QLabel # Importa QLabel para los mensajes de error inline
+    QMessageBox, QLabel 
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 
@@ -18,7 +18,6 @@ class ManagementTab(QWidget):
         layout = QHBoxLayout()
         splitter = QSplitter(Qt.Horizontal)
 
-        # --- Hospitales ---
         hospital_group = QGroupBox("Hospitales")
         hospital_layout = QVBoxLayout()
 
@@ -47,7 +46,6 @@ class ManagementTab(QWidget):
         hospital_layout.addLayout(btn_layout)
         hospital_group.setLayout(hospital_layout)
 
-        # --- Doctores ---
         doctor_group = QGroupBox("Doctores")
         doctor_layout = QVBoxLayout()
 
@@ -101,7 +99,6 @@ class ManagementTab(QWidget):
         self.doctor_table.horizontalHeader().setStretchLastSection(True)
         self.doctor_table.resizeColumnsToContents()
 
-
     def filter_hospitals(self):
         text = self.hospital_search.text().lower()
         for i in range(self.hospital_table.rowCount()):
@@ -124,7 +121,6 @@ class ManagementTab(QWidget):
                                     QMessageBox.Ok, QMessageBox.Ok)
                 return
 
-            # Verificar si el hospital ya existe
             if self.hospital_controller.buscar_hospital(cleaned_name):
                 QMessageBox.warning(self, "Error de Duplicidad", f"Ya existe un hospital con el nombre '{cleaned_name}'.",
                                     QMessageBox.Ok, QMessageBox.Ok)
@@ -157,7 +153,7 @@ class ManagementTab(QWidget):
         id_input = QLineEdit()
         id_input.setPlaceholderText("ID del doctor (ej: D001)")
         id_error_label = QLabel("¡ID no puede estar vacío!")
-        id_error_label.setProperty("class", "error") # Aplica la "clase" CSS
+        id_error_label.setProperty("class", "error") 
         id_error_label.hide()
 
         name_input = QLineEdit()
@@ -185,14 +181,12 @@ class ManagementTab(QWidget):
         layout.addRow(buttons)
         dialog.setLayout(layout)
 
-        # Validación personalizada antes de aceptar
         def validate_inputs():
             is_valid = True
             cleaned_id = id_input.text().strip()
             cleaned_name = name_input.text().strip()
             cleaned_spec = spec_input.text().strip()
 
-            # Validación de campos vacíos
             if not cleaned_id:
                 id_error_label.show()
                 is_valid = False
@@ -211,13 +205,11 @@ class ManagementTab(QWidget):
             else:
                 spec_error_label.hide()
 
-            if not is_valid: # Si hay campos vacíos, mostramos el mensaje general y no continuamos
+            if not is_valid: 
                 QMessageBox.warning(dialog, "Campos Incompletos", "Por favor, completa todos los campos requeridos.",
                                     QMessageBox.Ok, QMessageBox.Ok)
                 return
 
-
-            # Validación de duplicidad para el ID del doctor
             if self.doctor_controller.buscar_doctor(cleaned_id):
                 QMessageBox.warning(dialog, "Error de Duplicidad", f"Ya existe un doctor con el ID '{cleaned_id}'.",
                                     QMessageBox.Ok, QMessageBox.Ok)
@@ -225,14 +217,13 @@ class ManagementTab(QWidget):
                 id_error_label.show()
                 is_valid = False
             else:
-                id_error_label.hide() # Ocultar si ya no hay duplicidad
+                id_error_label.hide() 
 
             if is_valid:
-                dialog.accept() # Si todo es válido, acepta el diálogo
+                dialog.accept() 
 
-        # Conectar el botón OK a nuestra función de validación
-        buttons.accepted.disconnect(dialog.accept) # Desconecta la conexión original
-        buttons.accepted.connect(validate_inputs) # Conecta a la función de validación
+        buttons.accepted.disconnect(dialog.accept) 
+        buttons.accepted.connect(validate_inputs) 
 
         if dialog.exec_() == QDialog.Accepted:
             self.doctor_controller.crear_doctor(id_input.text().strip(), name_input.text().strip(), spec_input.text().strip())

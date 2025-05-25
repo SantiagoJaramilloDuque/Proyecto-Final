@@ -20,10 +20,7 @@ class HospitalApp(QMainWindow):
         self.management_tab = ManagementTab(self.doctor_controller, self.hospital_controller)
         self.assignment_tab = AssignmentTab(self.doctor_controller, self.hospital_controller)
 
-        # Sincronizar cuando se actualicen datos
-        # Cuando ManagementTab actualiza, AssignmentTab refresca
         self.management_tab.data_updated.connect(self.assignment_tab.refresh)
-        # ¡NUEVA CONEXIÓN! Cuando AssignmentTab actualiza, ManagementTab refresca
         self.assignment_tab.data_updated.connect(self.management_tab.refresh_data)
 
         tabs.addTab(self.management_tab, "Gestión")
