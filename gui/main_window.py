@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import (
     QInputDialog, QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
+    QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
     QTabWidget, QMessageBox, QComboBox, QGroupBox, QSplitter, QDialog, QInputDialog,
     QFormLayout, QDialogButtonBox
 )
@@ -111,24 +111,6 @@ class HospitalApp(QMainWindow):
     def setup_assignment_tab(self, tab):
         layout = QVBoxLayout()
         
-        # Panel de Búsqueda
-        search_group = QGroupBox("Búsqueda Avanzada")
-        search_layout = QHBoxLayout()
-        
-        self.search_hospital_input = QLineEdit()
-        self.search_hospital_input.setPlaceholderText("Buscar hospital...")
-        
-        self.search_doctor_input = QLineEdit()
-        self.search_doctor_input.setPlaceholderText("Buscar doctor...")
-        
-        search_btn = QPushButton("Buscar")
-        search_btn.clicked.connect(self.search_assignments)
-        
-        search_layout.addWidget(self.search_hospital_input)
-        search_layout.addWidget(self.search_doctor_input)
-        search_layout.addWidget(search_btn)
-        search_group.setLayout(search_layout)
-        
         # Panel de Asignación
         assign_group = QGroupBox("Asignar Doctor a Hospital")
         assign_layout = QHBoxLayout()
@@ -149,7 +131,6 @@ class HospitalApp(QMainWindow):
         self.assignment_table.setColumnCount(3)
         self.assignment_table.setHorizontalHeaderLabels(["Hospital", "Doctor", "Especialidad"])
         
-        layout.addWidget(search_group)
         layout.addWidget(assign_group)
         layout.addWidget(self.assignment_table)
         

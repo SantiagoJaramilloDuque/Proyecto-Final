@@ -23,9 +23,9 @@ class ImpCrudDoctor(ICrud):
         doctor = self.obtener_por_id(id)
         if doctor:
             if 'nombre' in kwargs:
-                doctor._Doctor__nombre = kwargs['nombre']
+                doctor.nombre = kwargs['nombre'] 
             if 'especialidad' in kwargs:
-                doctor._Doctor__especialidad = kwargs['especialidad']
+                doctor.especialidad = kwargs['especialidad']  
             return True
         return False
 

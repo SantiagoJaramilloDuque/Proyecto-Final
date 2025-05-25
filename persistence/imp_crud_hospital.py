@@ -12,7 +12,7 @@ class ImpCrudHospital(ICrud):
 
     def obtener_por_id(self, nombre):
         for hospital in self.__hospitales:
-            if hospital.nombre == nombre:
+            if hospital.nombre == nombre:  
                 return hospital
         return None
 
@@ -22,7 +22,7 @@ class ImpCrudHospital(ICrud):
     def actualizar(self, old_nombre, **kwargs):
         hospital = self.obtener_por_id(old_nombre)
         if hospital and 'nuevo_nombre' in kwargs:
-            hospital._Hospital__nombre = kwargs['nuevo_nombre']
+            hospital.nombre = kwargs['nuevo_nombre'] 
             return True
         return False
 
