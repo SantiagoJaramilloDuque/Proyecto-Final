@@ -12,6 +12,7 @@ class ManagementTab(QWidget):
         super().__init__()
         self.doctor_controller = doctor_controller
         self.hospital_controller = hospital_controller
+        self.apply_styles()
         self.init_ui()
 
     def init_ui(self):
@@ -243,4 +244,178 @@ class ManagementTab(QWidget):
         if confirm == QMessageBox.Yes:
             self.doctor_controller.eliminar_doctor(doc_id)
             self.refresh_data()
-            self.data_updated.emit()
+    
+    def apply_styles(self):
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #f0f2f5; /* Fondo general de la pestaña */
+                font-family: "Segoe UI", sans-serif;
+                color: #333333;
+            }
+
+            QGroupBox {
+                border: 2px solid #5C6BC0; /* Borde predeterminado para QGroupBox */
+                border-radius: 8px;
+                margin-top: 10px;
+                background-color: #ffffff; /* Fondo blanco para los grupos */
+                padding: 10px;
+            }
+
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                subcontrol-position: top center; /* Centrar el título */
+                padding: 0 10px;
+                background-color: #5C6BC0; /* Fondo del título */
+                color: white; /* Texto blanco en el título */
+                border-radius: 5px;
+                padding: 2px 8px;
+            }
+
+            QGroupBox#hospitalGroupBox {
+                border: 2px solid #4CAF50; /* Verde para Hospitales */
+            }
+            QGroupBox#hospitalGroupBox::title {
+                background-color: #4CAF50;
+            }
+
+            QGroupBox#doctorGroupBox {
+                border: 2px solid #FFC107; /* Amarillo/Ámbar para Doctores */
+            }
+            QGroupBox#doctorGroupBox::title {
+                background-color: #FFC107;
+                color: #333333; /* Texto oscuro para contraste en amarillo */
+            }
+
+            QLineEdit#searchLineEdit {
+                border: 1px solid #cccccc;
+                border-radius: 18px; /* Más redondeado */
+                padding: 8px 15px; /* Espacio interno */
+                background-color: #ffffff;
+                selection-background-color: #a8d9ff;
+                font-size: 14px;
+            }
+            QLineEdit#searchLineEdit:focus {
+                border: 2px solid #5C6BC0; /* Borde más pronunciado al enfocar */
+            }
+
+            QTableWidget#dataTable {
+                border: 1px solid #dddddd;
+                border-radius: 8px;
+                font-size: 13px;
+                background-color: #fefefe;
+                gridline-color: #eeeeee; /* Líneas de la cuadrícula más suaves */
+            }
+            QTableWidget#dataTable QHeaderView::section {
+                background-color: #607D8B; /* Fondo de la cabecera de la tabla */
+                color: white;
+                padding: 8px;
+                border: 1px solid #78909C;
+                font-weight: bold;
+            }
+            QTableWidget#dataTable QHeaderView::section:hover {
+                background-color: #78909C;
+            }
+            QTableWidget#dataTable::item {
+                padding: 5px;
+            }
+            QTableWidget#dataTable::item:selected {
+                background-color: #9FA8DA; /* Azul claro para la selección */
+                color: #333333;
+            }
+            QTableWidget#dataTable::item:hover {
+                background-color: #E8EAF6; /* Fondo suave al pasar el ratón */
+            }
+            QTableWidget#dataTable {
+                alternate-background-color: #f9f9f9; /* Filas alternas */
+            }
+
+            QPushButton#addButton {
+                background-color: #28A745; /* Verde para añadir */
+                color: white;
+                border: none;
+                border-radius: 15px;
+                padding: 10px 20px;
+                font-size: 14px;
+                font-weight: bold;
+                margin: 5px;
+            }
+            QPushButton#addButton:hover {
+                background-color: #218838;
+            }
+            QPushButton#addButton:pressed {
+                background-color: #196f2e;
+            }
+
+            QPushButton#deleteButton {
+                background-color: #DC3545; /* Rojo para eliminar */
+                color: white;
+                border: none;
+                border-radius: 15px;
+                padding: 10px 20px;
+                font-size: 14px;
+                font-weight: bold;
+                margin: 5px;
+            }
+            QPushButton#deleteButton:hover {
+                background-color: #C82333;
+            }
+            QPushButton#deleteButton:pressed {
+                background-color: #bd2130;
+            }
+
+            QSplitter::handle {
+                background-color: #CFD8DC; /* Color suave para el divisor */
+                width: 8px;
+                margin: 5px 0;
+                border-radius: 4px;
+            }
+            QSplitter::handle:hover {
+                background-color: #B0BEC5;
+            }
+            QSplitter::handle:horizontal {
+                /* Puedes añadir un icono si lo deseas: */
+                /* image: url(./icons/splitter_horizontal_icon.png); */
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+
+            /* Estilos para el diálogo de añadir doctor */
+            QDialog {
+                background-color: #f0f2f5;
+                border: 1px solid #cccccc;
+                border-radius: 5px;
+            }
+            QDialog QLineEdit {
+                border: 1px solid #cccccc;
+                border-radius: 5px;
+                padding: 5px;
+            }
+            QDialog QPushButton {
+                min-width: 80px;
+                padding: 5px 10px;
+                border-radius: 5px;
+                font-weight: normal;
+                background-color: #5C6BC0; /* Azul para botones de diálogo */
+                color: white;
+            }
+            QDialog QPushButton:hover {
+                background-color: #3F51B5;
+            }
+            QDialog QPushButton[text="Cancel"] { /* Estilo específico para el botón Cancelar */
+                background-color: #9E9E9E;
+            }
+            QDialog QPushButton[text="Cancel"]:hover {
+                background-color: #757575;
+            }
+            QDialog QLabel { /* Estilo para las etiquetas de los formularios */
+                color: #555555;
+                font-weight: bold;
+                margin-top: 5px;
+            }
+            QLabel.error { /* Estilo para las etiquetas de error */
+                color: #D32F2F; /* Rojo oscuro */
+                font-weight: bold;
+                margin-left: 5px;
+                font-size: 12px;
+            }
+        """)
