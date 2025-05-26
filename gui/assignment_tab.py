@@ -46,6 +46,80 @@ class AssignmentTab(QWidget):
 
         self.refresh()
 
+    def refresh(self):
+        self.hospital_combo.clear()
+        self.doctor_combo.clear()
+
+        hospitals = self.hospital_controller.obtener_todos()
+        doctors = self.doctor_controller.obtener_todos()
+
+        if not hospitals:
+            self.hospital_combo.addItem("No hay hospitales disponibles", None)
+        else:
+            self.hospital_combo.addItem("Seleccionar Hospital", None)
+            for h in hospitals:
+                self.hospital_combo.addItem(h.nombre, h.nombre)
+
+        if not doctors:
+            self.doctor_combo.addItem("No hay doctores disponibles", None)
+        else:
+            self.doctor_combo.addItem("Seleccionar Doctor", None)
+            for d in doctors:
+                self.doctor_combo.addItem(f"{d.nombre} (ID: {d.doctor_id})", d.doctor_id)
+
+        self.assignment_table.setRowCount(0) 
+        for h in hospitals:
+            for d in h.doctores:
+                row_pos = self.assignment_table.rowCount()
+                self.assignment_table.insertRow(row_pos)
+                self.assignment_table.setItem(row_pos, 0, QTableWidgetItem(h.nombre))
+                self.assignment_table.setItem(row_pos, 1, QTableWidgetItem(d.nombre))
+                self.assignment_table.setItem(row_pos, 2, QTableWidgetItem(d.especialidad))
+        self.assignment_table.horizontalHeader().setStretchLastSection(True)
+        self.assignment_table.resizeColumnsToContents()
+
+
+    def assign_doctor(self):
+        hospital_name = self.hospital_combo.currentData()
+        doctor_id = self.doctor_combo.currentData()
+
+        if hospital_name is None or doctor_id is None:
+            QMessageBox.warning(self, "Error de Asignación", "Por favor, selecciona un hospital y un doctor válidos.",
+                                QMessageBox.Ok, QMessageBox.Ok)
+            return
+
+        doctor = self.doctor_controller.buscar_doctor(doctor_id)
+        hospital_a_asignar = self.hospital_controller.buscar_hospital(hospital_name)
+
+        if not doctor or not hospital_a_asignar:
+            QMessageBox.critical(self, "Error Interno", "No se pudo encontrar el doctor o el hospital seleccionado. Por favor, recarga la aplicación.",
+                                QMessageBox.Ok, QMessageBox.Ok)
+            return
+
+        hospital_actual_del_doctor = None
+        todos_los_hospitales = self.hospital_controller.obtener_todos()
+        for h in todos_los_hospitales:
+            if doctor in h.doctores:
+                hospital_actual_del_doctor = h
+                break 
+
+        if hospital_actual_del_doctor is not None:
+            QMessageBox.warning(self, "Doctor Ya Asignado",
+                                f"El doctor '{doctor.nombre}' (ID: {doctor.doctor_id}) ya está asignado a '{hospital_actual_del_doctor.nombre}'. "
+                                "Un doctor solo puede estar asignado a un hospital a la vez.",
+                                QMessageBox.Ok, QMessageBox.Ok)
+            return
+
+        if doctor in hospital_a_asignar.doctores:
+            QMessageBox.information(self, "Información", f"El doctor '{doctor.nombre}' ya está asignado a '{hospital_a_asignar.nombre}'.",
+                                    QMessageBox.Ok, QMessageBox.Ok)
+        else:
+            self.hospital_controller.agregar_doctor(hospital_a_asignar.nombre, doctor)
+            QMessageBox.information(self, "Asignación Exitosa", f"Doctor '{doctor.nombre}' asignado a '{hospital_a_asignar.nombre}'.",
+                                    QMessageBox.Ok, QMessageBox.Ok)
+            self.refresh()
+            self.data_updated.emit()
+    
     def _apply_styles(self):
         self.setStyleSheet("""
             QWidget {
@@ -155,77 +229,3 @@ class AssignmentTab(QWidget):
                 alternate-background-color: #f9f9f9;
             }
         """)
-
-    def refresh(self):
-        self.hospital_combo.clear()
-        self.doctor_combo.clear()
-
-        hospitals = self.hospital_controller.obtener_todos()
-        doctors = self.doctor_controller.obtener_todos()
-
-        if not hospitals:
-            self.hospital_combo.addItem("No hay hospitales disponibles", None)
-        else:
-            self.hospital_combo.addItem("Seleccionar Hospital", None)
-            for h in hospitals:
-                self.hospital_combo.addItem(h.nombre, h.nombre)
-
-        if not doctors:
-            self.doctor_combo.addItem("No hay doctores disponibles", None)
-        else:
-            self.doctor_combo.addItem("Seleccionar Doctor", None)
-            for d in doctors:
-                self.doctor_combo.addItem(f"{d.nombre} (ID: {d.doctor_id})", d.doctor_id)
-
-        self.assignment_table.setRowCount(0) 
-        for h in hospitals:
-            for d in h.doctores:
-                row_pos = self.assignment_table.rowCount()
-                self.assignment_table.insertRow(row_pos)
-                self.assignment_table.setItem(row_pos, 0, QTableWidgetItem(h.nombre))
-                self.assignment_table.setItem(row_pos, 1, QTableWidgetItem(d.nombre))
-                self.assignment_table.setItem(row_pos, 2, QTableWidgetItem(d.especialidad))
-        self.assignment_table.horizontalHeader().setStretchLastSection(True)
-        self.assignment_table.resizeColumnsToContents()
-
-
-    def assign_doctor(self):
-        hospital_name = self.hospital_combo.currentData()
-        doctor_id = self.doctor_combo.currentData()
-
-        if hospital_name is None or doctor_id is None:
-            QMessageBox.warning(self, "Error de Asignación", "Por favor, selecciona un hospital y un doctor válidos.",
-                                QMessageBox.Ok, QMessageBox.Ok)
-            return
-
-        doctor = self.doctor_controller.buscar_doctor(doctor_id)
-        hospital_a_asignar = self.hospital_controller.buscar_hospital(hospital_name)
-
-        if not doctor or not hospital_a_asignar:
-            QMessageBox.critical(self, "Error Interno", "No se pudo encontrar el doctor o el hospital seleccionado. Por favor, recarga la aplicación.",
-                                QMessageBox.Ok, QMessageBox.Ok)
-            return
-
-        hospital_actual_del_doctor = None
-        todos_los_hospitales = self.hospital_controller.obtener_todos()
-        for h in todos_los_hospitales:
-            if doctor in h.doctores:
-                hospital_actual_del_doctor = h
-                break 
-
-        if hospital_actual_del_doctor is not None:
-            QMessageBox.warning(self, "Doctor Ya Asignado",
-                                f"El doctor '{doctor.nombre}' (ID: {doctor.doctor_id}) ya está asignado a '{hospital_actual_del_doctor.nombre}'. "
-                                "Un doctor solo puede estar asignado a un hospital a la vez.",
-                                QMessageBox.Ok, QMessageBox.Ok)
-            return
-
-        if doctor in hospital_a_asignar.doctores:
-            QMessageBox.information(self, "Información", f"El doctor '{doctor.nombre}' ya está asignado a '{hospital_a_asignar.nombre}'.",
-                                    QMessageBox.Ok, QMessageBox.Ok)
-        else:
-            self.hospital_controller.agregar_doctor(hospital_a_asignar.nombre, doctor)
-            QMessageBox.information(self, "Asignación Exitosa", f"Doctor '{doctor.nombre}' asignado a '{hospital_a_asignar.nombre}'.",
-                                    QMessageBox.Ok, QMessageBox.Ok)
-            self.refresh()
-            self.data_updated.emit()

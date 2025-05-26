@@ -37,5 +37,4 @@ class ImpCrudDoctor(ICrud):
         return False
 
     def relacion(self, **kwargs):
-        # Implementación específica para relaciones de doctores
         pass
