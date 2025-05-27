@@ -102,15 +102,40 @@ class ManagementTab(QWidget):
 
     def filter_hospitals(self):
         text = self.hospital_search.text().lower()
-        for i in range(self.hospital_table.rowCount()):
-            item = self.hospital_table.item(i, 0)
-            self.hospital_table.setRowHidden(i, text not in item.text().lower())
+        self.hospital_table.setRowCount(0)  
+
+        if text:
+            hospital = self.hospital_controller.buscar_hospital(text)
+            if hospital:
+                self._add_hospital_to_table(hospital)  
+        else:
+            for hospital in self.hospital_controller.obtener_todos():
+                self._add_hospital_to_table(hospital)
 
     def filter_doctors(self):
         text = self.doctor_search.text().lower()
-        for i in range(self.doctor_table.rowCount()):
-            visible = any(text in self.doctor_table.item(i, j).text().lower() for j in range(3))
-            self.doctor_table.setRowHidden(i, not visible)
+        self.doctor_table.setRowCount(0)  
+
+        if text:
+            doctor = self.doctor_controller.buscar_doctor(text)
+            if doctor:
+                self._add_doctor_to_table(doctor) 
+        else:
+            for doctor in self.doctor_controller.obtener_todos():
+                self._add_doctor_to_table(doctor)
+
+    def _add_hospital_to_table(self, hospital):
+        row_position = self.hospital_table.rowCount()
+        self.hospital_table.insertRow(row_position)
+        self.hospital_table.setItem(row_position, 0, QTableWidgetItem(hospital.nombre))
+
+    def _add_doctor_to_table(self, doctor):
+        row_position = self.doctor_table.rowCount()
+        self.doctor_table.insertRow(row_position)
+        self.doctor_table.setItem(row_position, 0, QTableWidgetItem(doctor.doctor_id))
+        self.doctor_table.setItem(row_position, 1, QTableWidgetItem(doctor.nombre))
+        self.doctor_table.setItem(row_position, 2, QTableWidgetItem(doctor.especialidad))
+
 
     def add_hospital(self):
         from PyQt5.QtWidgets import QInputDialog
